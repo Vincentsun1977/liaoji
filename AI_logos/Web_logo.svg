@@ -1,0 +1,49 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="170" y1="890" x2="850" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF3F42"/>
+      <stop offset="0.48" stop-color="#FF5A45"/>
+      <stop offset="1" stop-color="#FF8A5C"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="260" y1="365" x2="805" y2="670" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF4B3E"/>
+      <stop offset="1" stop-color="#FF7C55"/>
+    </linearGradient>
+    <linearGradient id="bookmark" x1="570" y1="238" x2="660" y2="368" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF382F"/>
+      <stop offset="1" stop-color="#FF7450"/>
+    </linearGradient>
+    <filter id="softShadow" x="110" y="140" width="804" height="780" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#C83A2C" flood-opacity="0.18"/>
+    </filter>
+    <filter id="bubbleShadow" x="180" y="210" width="650" height="560" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#9B2E24" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Browser extension / app icon base -->
+  <rect x="96" y="96" width="832" height="832" rx="180" fill="url(#bg)" filter="url(#softShadow)"/>
+
+  <!-- Chat bubble + notebook page hybrid -->
+  <path filter="url(#bubbleShadow)" fill="#FFFFFF" d="M694 245C772 245 832 305 832 383V570C832 648 772 708 694 708H408C391 708 374 706 358 701L242 763C217 776 191 752 203 726L252 620C229 589 216 550 216 507V383C216 305 276 245 354 245H694Z"/>
+
+  <!-- Subtle page fold -->
+  <path d="M735 708C787 706 832 660 832 608V586C810 657 777 690 735 708Z" fill="#F5F1EF"/>
+
+  <!-- Bookmark -->
+  <path d="M585 245H669V368C669 381 654 389 644 380L627 365C621 360 613 360 607 365L590 380C580 389 565 381 565 368V265C565 254 574 245 585 245Z" fill="url(#bookmark)"/>
+
+  <!-- Text lines / AI chat summary -->
+  <circle cx="324" cy="414" r="18" fill="url(#accent)"/>
+  <rect x="375" y="398" width="184" height="35" rx="17.5" fill="url(#accent)"/>
+  <rect x="308" y="488" width="302" height="35" rx="17.5" fill="url(#accent)"/>
+  <rect x="308" y="578" width="302" height="35" rx="17.5" fill="url(#accent)"/>
+
+  <!-- Notebook binding tabs -->
+  <rect x="770" y="395" width="94" height="38" rx="19" fill="#FF7450" opacity="0.96"/>
+  <rect x="770" y="486" width="94" height="38" rx="19" fill="#FF6848" opacity="0.96"/>
+  <rect x="770" y="577" width="94" height="38" rx="19" fill="#FF5B40" opacity="0.96"/>
+
+  <!-- Small highlights -->
+  <path d="M181 286C210 186 310 139 432 139H792C687 117 353 113 249 151C152 186 110 283 120 420C132 363 151 318 181 286Z" fill="white" opacity="0.12"/>
+</svg>

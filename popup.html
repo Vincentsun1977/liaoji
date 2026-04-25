@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>聊记</title>
+    <link rel="stylesheet" href="src/popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <span id="plan-badge" class="plan-badge is-free">Free</span>
+      <section class="status-panel">
+        <strong id="chat-title">正在识别当前聊天</strong>
+        <div class="metrics">
+          <span id="platform-pill" class="pill">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 8V6.8A2.8 2.8 0 0 1 9.8 4h4.4A2.8 2.8 0 0 1 17 6.8V8"></path>
+              <path d="M5 8h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"></path>
+              <path d="M9 13h6"></path>
+            </svg>
+            ...
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 5h16v12H7l-3 3Z"></path>
+            </svg>
+            <b id="message-count">0</b> 条消息
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h12"></path>
+              <path d="M4 17h8"></path>
+            </svg>
+            <b id="word-count">0</b> 字符
+          </span>
+        </div>
+      </section>
+
+      <section class="ai-card">
+        <label class="switch-row switch">
+          <span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3l1.6 4.2L18 9l-4.4 1.8L12 15l-1.6-4.2L6 9l4.4-1.8Z"></path>
+              <path d="M5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8Z"></path>
+            </svg>
+            AI 智能总结
+          </span>
+          <input id="ai-summary-input" type="checkbox" role="switch">
+          <i aria-hidden="true"></i>
+        </label>
+      </section>
+
+      <div class="actions">
+        <button id="obsidian-button" class="primary-button" type="button" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 3h10l2 2v16H6Z"></path>
+            <path d="M9 3v6h6"></path>
+          </svg>
+          保存到笔记
+        </button>
+        <button id="bulk-button" class="secondary-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3 4 7l8 4 8-4Z"></path>
+            <path d="M4 12l8 4 8-4"></path>
+            <path d="M4 17l8 4 8-4"></path>
+          </svg>
+          批量导出
+        </button>
+      </div>
+
+      <section class="preview-section">
+        <div class="section-title">
+          <span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 4h10l4 4v12H5Z"></path>
+              <path d="M14 4v5h5"></path>
+            </svg>
+            MARKDOWN 预览
+          </span>
+          <span id="status-text">准备就绪</span>
+        </div>
+        <textarea id="markdown-preview" spellcheck="false" placeholder="当前聊天会自动提取并显示在这里。"></textarea>
+      </section>
+
+      <footer class="footer-bar">
+        <button id="settings-button" class="icon-button" type="button" title="设置" aria-label="设置">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path>
+            <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21.3a2.1 2.1 0 0 1-4.2 0v-.06a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.65-1.09H2.1a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 3.8 8.62a1.8 1.8 0 0 0-.36-1.98l-.04-.04A2.1 2.1 0 0 1 6.37 3.63l.04.04a1.8 1.8 0 0 0 1.98.36A1.8 1.8 0 0 0 9.48 2.38V2.1a2.1 2.1 0 0 1 4.2 0v.28a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.09h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15Z"></path>
+          </svg>
+        </button>
+        <span>v0.1.0</span>
+      </footer>
+
+      <section id="membership-modal" class="membership-modal" hidden aria-label="会员功能">
+        <div class="membership-card">
+          <div class="membership-kicker">PRO NOTE MODE</div>
+          <h2 id="membership-title">解锁会员功能</h2>
+          <p id="membership-message">批量导出和 AI 总结属于 Pro 功能。当前页单次导出可以继续免费使用。</p>
+          <ul>
+            <li>批量扫描并导出历史对话</li>
+            <li>AI 自动整理成知识库笔记</li>
+            <li>统一保存到 Obsidian / Notion 工作流</li>
+          </ul>
+          <div class="membership-actions">
+            <button id="membership-login-button" class="secondary-button" type="button">登录 / 注册</button>
+            <button id="membership-upgrade-button" class="primary-button" type="button">开通会员</button>
+          </div>
+          <button id="membership-close-button" class="text-close" type="button">暂不需要</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="src/settings.js"></script>
+    <script src="src/cloud.js"></script>
+    <script src="src/exporters/markdown.js"></script>
+    <script src="src/popup.js"></script>
+  </body>
+</html>

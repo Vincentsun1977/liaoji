@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>批量导出 - 聊记</title>
+    <link rel="stylesheet" href="src/bulk.css">
+  </head>
+  <body>
+    <main class="bulk-shell">
+      <header class="bulk-header">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">
+            <img id="platform-logo" alt="">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 8V6.8A2.8 2.8 0 0 1 9.8 4h4.4A2.8 2.8 0 0 1 17 6.8V8"></path>
+              <path d="M5 8h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"></path>
+              <path d="M9 13h6"></path>
+            </svg>
+          </span>
+          <h1 class="export-mark" aria-label="批量导出" title="批量导出">
+            <svg viewBox="0 0 72 36" aria-hidden="true">
+              <path class="chevron chevron-1" d="M9 6l12 12L9 30"></path>
+              <path class="chevron chevron-2" d="M25 6l12 12-12 12"></path>
+              <path class="chevron chevron-3" d="M41 6l12 12-12 12"></path>
+            </svg>
+            <span id="platform-title" class="sr-only">ChatGPT</span>
+          </h1>
+          <span class="mode-pill" aria-label="保存到 Obsidian" title="保存到 Obsidian">
+            <img src="AI_logos/obsidian_logo.svg" alt="">
+          </span>
+        </div>
+        <div class="header-actions">
+          <span id="plan-badge" class="plan-badge is-free">Free</span>
+          <button id="settings-button" class="icon-ghost" type="button" aria-label="设置">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path>
+              <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21.3a2.1 2.1 0 0 1-4.2 0v-.06a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.65-1.09H2.1a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 3.8 8.62a1.8 1.8 0 0 0-.36-1.98l-.04-.04A2.1 2.1 0 0 1 6.37 3.63l.04.04a1.8 1.8 0 0 0 1.98.36A1.8 1.8 0 0 0 9.48 2.38V2.1a2.1 2.1 0 0 1 4.2 0v.28a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.09h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15Z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="command-bar">
+        <div class="command-group">
+          <button id="scan-button" class="tool-button" type="button">扫描</button>
+          <button id="choose-dir-button" class="tool-button" type="button">目录</button>
+          <label class="tool-toggle">
+            <input id="overwrite-input" type="checkbox" checked>
+            <span>覆盖</span>
+          </label>
+        </div>
+
+        <div class="search-export">
+          <input id="search-input" type="search" placeholder="搜索标题...">
+          <button id="export-button" class="export-button" type="button" disabled>导出</button>
+        </div>
+      </section>
+
+      <section class="summary">
+        <span>总数：<b id="total-count">0</b></span>
+        <span>已选：<b id="selected-count">0</b></span>
+        <span>完成：<b id="done-count">0</b></span>
+        <span class="output-ready"><i></i><span id="directory-label">未选择目录</span></span>
+      </section>
+
+      <section class="table-head">
+        <label class="checkbox-row">
+          <input id="select-all-input" type="checkbox">
+          <span>选择对话标题</span>
+        </label>
+        <div class="table-actions">
+          <button id="select-all-button" class="icon-text-button" type="button" title="全选" aria-label="全选">✓</button>
+          <button id="select-none-button" class="icon-text-button" type="button" title="全不选" aria-label="全不选">–</button>
+          <span>日期</span>
+          <span>状态</span>
+        </div>
+      </section>
+
+      <section id="conversation-list" class="conversation-list">
+        <div class="empty-state">打开对应聊天页面后点击扫描。当前版本会识别左侧已加载的历史对话。</div>
+      </section>
+
+      <section class="log-panel">
+        <div class="section-title">
+          <span>>_ 日志输出</span>
+          <button id="clear-log-button" class="text-button" type="button">清空</button>
+        </div>
+        <div id="log-list" class="log-list"></div>
+      </section>
+
+      <span id="status-pill" class="sr-only">待扫描</span>
+
+      <section id="membership-overlay" class="membership-overlay" hidden aria-label="会员功能">
+        <div class="membership-card">
+          <div id="membership-kicker" class="membership-kicker">PRO BATCH EXPORT</div>
+          <h2 id="membership-title">批量导出需要 Pro</h2>
+          <p id="membership-message">当前页单次导出可以免费使用。批量扫描历史对话、批量写入笔记和 AI 总结会作为会员功能开放。</p>
+          <div class="benefit-grid">
+            <span>批量扫描历史对话</span>
+            <span>多选导出到笔记</span>
+            <span>AI 整理知识库笔记</span>
+          </div>
+          <div class="membership-actions">
+            <button id="membership-login-button" class="ghost-button" type="button">登录 / 注册</button>
+            <button id="membership-upgrade-button" class="dark-button" type="button">开通会员</button>
+          </div>
+          <button id="membership-back-button" class="text-button" type="button">返回当前聊天</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="src/settings.js"></script>
+    <script src="src/cloud.js"></script>
+    <script src="src/exporters/markdown.js"></script>
+    <script src="src/bulk.js"></script>
+  </body>
+</html>

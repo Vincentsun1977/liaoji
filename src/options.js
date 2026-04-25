@@ -1,0 +1,270 @@
+(function () {
+  'use strict';
+
+  const defaults = window.ChatRestoreSettings;
+  const vaultInput = document.getElementById('vault-input');
+  const vaultPickerButton = document.getElementById('vault-picker-button');
+  const vaultDirectoryInput = document.getElementById('vault-directory-input');
+  const folderInput = document.getElementById('folder-input');
+  const folderPickerButton = document.getElementById('folder-picker-button');
+  const folderDirectoryInput = document.getElementById('folder-directory-input');
+  const overwriteInput = document.getElementById('overwrite-input');
+  const targetPreview = document.getElementById('target-preview');
+  const aiProviderInput = document.getElementById('ai-provider-input');
+  const aiSummaryStyleInput = document.getElementById('ai-summary-style-input');
+  const statusText = document.getElementById('status-text');
+  const accountStatus = document.getElementById('account-status');
+  const planBadge = document.getElementById('plan-badge');
+  const refreshMembershipButton = document.getElementById('refresh-membership-button');
+  const loginButton = document.getElementById('login-button');
+  const upgradeButton = document.getElementById('upgrade-button');
+  const logoutButton = document.getElementById('logout-button');
+
+  vaultPickerButton.addEventListener('click', chooseVault);
+  vaultDirectoryInput.addEventListener('change', chooseVaultFromInput);
+  folderPickerButton.addEventListener('click', chooseFolder);
+  folderDirectoryInput.addEventListener('change', chooseFolderFromInput);
+  refreshMembershipButton.addEventListener('click', refreshMembership);
+  loginButton.addEventListener('click', login);
+  upgradeButton.addEventListener('click', upgrade);
+  logoutButton.addEventListener('click', logout);
+
+  [
+    vaultInput,
+    folderInput,
+    overwriteInput,
+    aiProviderInput,
+    aiSummaryStyleInput,
+  ].forEach((input) => {
+    input.addEventListener('change', saveSettings);
+    input.addEventListener('input', saveSettings);
+  });
+
+  init();
+
+  async function init() {
+    const syncSaved = await chrome.storage.sync.get({
+      ...defaults.DEFAULT_SYNC,
+      aiPrompt: defaults.DEFAULT_AI_PROMPT,
+    });
+
+    vaultInput.value = syncSaved.obsidianVault || '';
+    folderInput.value = syncSaved.obsidianFolder || '';
+    overwriteInput.checked = Boolean(syncSaved.obsidianOverwrite);
+    aiProviderInput.value = syncSaved.aiProvider || defaults.DEFAULT_SYNC.aiProvider;
+    aiSummaryStyleInput.value = syncSaved.aiSummaryStyle || defaults.DEFAULT_SYNC.aiSummaryStyle;
+    updateTargetPreview();
+    await updateAccountStatus();
+  }
+
+  async function login() {
+    try {
+      setStatus('正在登录');
+      await window.ChatRestoreCloud.openLogin();
+      await updateAccountStatus();
+      setStatus('登录成功');
+    } catch (error) {
+      setStatus(error?.message || '登录失败', true);
+    }
+  }
+
+  async function upgrade() {
+    try {
+      setStatus('正在打开付款页');
+      await window.ChatRestoreCloud.openCheckout();
+      setStatus('已打开付款页');
+    } catch (error) {
+      setStatus(error?.message || '开通失败', true);
+    }
+  }
+
+  async function logout() {
+    await window.ChatRestoreCloud.signOut();
+    await updateAccountStatus();
+    setStatus('已退出登录');
+  }
+
+  async function refreshMembership() {
+    try {
+      setStatus('正在刷新');
+      await updateAccountStatus();
+      setStatus('已刷新');
+    } catch (error) {
+      setStatus(error?.message || '刷新失败', true);
+    }
+  }
+
+  async function saveSettings() {
+    const settings = getSettings();
+    updateTargetPreview();
+    await chrome.storage.sync.set({
+      obsidianVault: settings.vault,
+      obsidianFolder: settings.folder,
+      obsidianOverwrite: settings.overwrite,
+      aiProvider: settings.aiProvider,
+      aiSummaryStyle: settings.aiSummaryStyle,
+    });
+    setStatus('已保存');
+  }
+
+  function getSettings() {
+    return {
+      vault: normalizeVault(vaultInput.value),
+      folder: normalizeFolder(folderInput.value),
+      overwrite: overwriteInput.checked,
+      aiProvider: aiProviderInput.value || defaults.DEFAULT_SYNC.aiProvider,
+      aiSummaryStyle: aiSummaryStyleInput.value || defaults.DEFAULT_SYNC.aiSummaryStyle,
+    };
+  }
+
+  async function updateAccountStatus() {
+    const membership = await window.ChatRestoreCloud.getMembership();
+    const isPro = Boolean(membership.pro);
+    const isLoggedIn = Boolean(membership.authenticated || membership.status !== 'anonymous');
+
+    planBadge.textContent = isPro ? '' : 'Free';
+    planBadge.className = `plan-badge ${isPro ? 'is-pro' : 'is-free'}`;
+    planBadge.title = isPro ? 'Pro 会员' : 'Free 账号';
+
+    accountStatus.textContent = isLoggedIn
+      ? `已登录 · ${isPro ? 'Pro 会员' : 'Free 账号'}`
+      : '未登录 · 当前只能使用免费功能';
+
+    loginButton.textContent = isLoggedIn ? '重新登录' : '登录';
+    logoutButton.hidden = !isLoggedIn;
+  }
+
+  async function chooseVault() {
+    const handle = await pickDirectoryHandle();
+    if (handle) {
+      const hasObsidianConfig = await directoryHasObsidianConfig(handle);
+      setVaultValue(handle.name);
+      setStatus(hasObsidianConfig ? '已选择 Vault' : '已选择目录，请确认它是 Vault', !hasObsidianConfig);
+      return;
+    }
+
+    vaultDirectoryInput.click();
+  }
+
+  async function chooseFolder() {
+    const handle = await pickDirectoryHandle();
+    if (handle) {
+      const hasObsidianConfig = await directoryHasObsidianConfig(handle);
+      if (hasObsidianConfig) {
+        setVaultValue(handle.name);
+        setFolderValue('');
+        setStatus('已选择 Vault，文件夹已清空');
+        return;
+      }
+      setFolderValue(handle.name);
+      setStatus('已选择目录');
+      return;
+    }
+
+    folderDirectoryInput.click();
+  }
+
+  async function pickDirectoryHandle() {
+    if (!window.showDirectoryPicker) return null;
+
+    try {
+      return await window.showDirectoryPicker({ mode: 'read' });
+    } catch (error) {
+      if (error?.name === 'AbortError') return null;
+      setStatus('无法打开目录选择器，已切换备用方式', true);
+      return null;
+    }
+  }
+
+  async function directoryHasObsidianConfig(handle) {
+    try {
+      await handle.getDirectoryHandle('.obsidian');
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function chooseVaultFromInput() {
+    const [file] = Array.from(vaultDirectoryInput.files || []);
+    const folderName = file?.webkitRelativePath?.split('/')?.[0] || '';
+    if (!folderName) {
+      setStatus('请选择含有文件的 Vault 目录，空目录无法被浏览器识别', true);
+      return;
+    }
+
+    setVaultValue(folderName);
+    vaultDirectoryInput.value = '';
+    setStatus('已选择 Vault');
+  }
+
+  function chooseFolderFromInput() {
+    const [file] = Array.from(folderDirectoryInput.files || []);
+    const folderName = file?.webkitRelativePath?.split('/')?.[0] || '';
+    if (!folderName) {
+      setStatus('请选择含有文件的目录，空目录无法被浏览器识别', true);
+      return;
+    }
+
+    setFolderValue(folderName);
+    folderDirectoryInput.value = '';
+    setStatus('已选择目录');
+  }
+
+  function setFolderValue(value) {
+    folderInput.value = normalizeFolder(value);
+    saveSettings();
+  }
+
+  function setVaultValue(value) {
+    vaultInput.value = normalizeVault(value);
+    saveSettings();
+  }
+
+  function updateTargetPreview() {
+    const settings = repairSettingsForObsidian(getSettings());
+    const target = [settings.vault, settings.folder].filter(Boolean).join('/');
+    targetPreview.textContent = target ? `将保存到：${target}` : '将保存到：未设置';
+  }
+
+  function repairSettingsForObsidian(settings) {
+    const vaultParts = splitPath(settings.vault);
+    if (vaultParts.length <= 1) return settings;
+
+    const [vault, ...vaultFolderParts] = vaultParts;
+    const folderParts = splitPath(settings.folder);
+    const folder = folderParts[0] === vault
+      ? [...vaultFolderParts, ...folderParts.slice(1)].join('/')
+      : [...vaultFolderParts, ...folderParts].join('/');
+
+    return {
+      ...settings,
+      vault,
+      folder: normalizeFolder(folder),
+    };
+  }
+
+  function normalizeFolder(value) {
+    return String(value || '')
+      .replace(/\\/g, '/')
+      .replace(/^\/+|\/+$/g, '')
+      .replace(/\/{2,}/g, '/')
+      .trim();
+  }
+
+  function normalizeVault(value) {
+    return String(value || '')
+      .replace(/\\/g, '/')
+      .replace(/^\/+|\/+$/g, '')
+      .trim();
+  }
+
+  function splitPath(value) {
+    return normalizeFolder(value).split('/').filter(Boolean);
+  }
+
+  function setStatus(text, isError = false) {
+    statusText.textContent = text;
+    statusText.className = isError ? 'error' : '';
+  }
+})();

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>聊记设置</title>
+    <link rel="stylesheet" href="src/options.css">
+  </head>
+  <body>
+    <main class="settings-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"><img src="icons/icon32.png" alt=""></span>
+          <strong>聊记设置</strong>
+          <span class="mode-pill">本地模式</span>
+        </div>
+        <div class="topbar-status">
+          <span id="status-text">已就绪</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path>
+            <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21.3a2.1 2.1 0 0 1-4.2 0v-.06a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.65-1.09H2.1a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 3.8 8.62a1.8 1.8 0 0 0-.36-1.98l-.04-.04A2.1 2.1 0 0 1 6.37 3.63l.04.04a1.8 1.8 0 0 0 1.98.36A1.8 1.8 0 0 0 9.48 2.38V2.1a2.1 2.1 0 0 1 4.2 0v.28a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.09h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15Z"></path>
+          </svg>
+        </div>
+      </header>
+
+      <div class="settings-body">
+        <aside class="settings-nav" aria-label="设置导航">
+          <nav>
+            <a class="active" href="#account">账号会员</a>
+            <a href="#notes">笔记保存</a>
+            <a href="#ai">AI总结</a>
+          </nav>
+        </aside>
+
+        <section class="settings-main">
+          <section class="settings-group" id="account">
+            <div class="group-heading">
+              <h1>账号设置</h1>
+              <p>管理账号及会员状态。</p>
+            </div>
+
+            <div class="account-card">
+              <div>
+                <strong>账号会员</strong>
+                <span id="account-status">正在读取账号状态</span>
+              </div>
+              <div class="account-actions">
+                <span id="plan-badge" class="plan-badge is-free">Free</span>
+                <button id="refresh-membership-button" class="link-button" type="button">刷新状态</button>
+                <button id="login-button" class="link-button" type="button">重新登录</button>
+                <button id="upgrade-button" class="solid-button" type="button">开通 Pro</button>
+                <button id="logout-button" class="link-button muted" type="button" hidden>退出</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-group" id="notes">
+            <div class="group-heading">
+              <h2>笔记保存</h2>
+              <p id="target-preview">将保存到：未设置</p>
+            </div>
+
+            <div class="settings-card">
+              <div class="setting-row">
+                <div>
+                  <label for="vault-input">Vault 名称</label>
+                  <p>Obsidian Vault 名称，不是完整 Finder 路径。</p>
+                </div>
+                <div class="control folder-row">
+                  <input id="vault-input" type="text" placeholder="例如：Raw">
+                  <button id="vault-picker-button" class="icon-button" type="button" title="选择 Vault 目录" aria-label="选择 Vault 目录">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 6.75a2 2 0 0 1 2-2h4.4l1.8 2H18a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path>
+                      <path d="M8 12h8"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <label for="folder-input">文件夹</label>
+                  <p>Vault 内部目录，例如 Chat_history。</p>
+                </div>
+                <div class="control folder-row">
+                  <input id="folder-input" type="text" placeholder="例如：Chat_history">
+                  <button id="folder-picker-button" class="icon-button" type="button" title="选择目录" aria-label="选择目录">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3.75 6.75a2 2 0 0 1 2-2h4.1l2 2h6.4a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H5.75a2 2 0 0 1-2-2Z"></path>
+                      <path d="M3.75 10.25h16.5"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <label for="overwrite-input">同名笔记时覆盖</label>
+                  <p>关闭后会使用 Obsidian append 模式。</p>
+                </div>
+                <label class="switch control">
+                  <input id="overwrite-input" type="checkbox" checked>
+                  <span></span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-group" id="ai">
+            <div class="group-heading">
+              <h2>AI总结</h2>
+              <p>主弹窗里的 AI 总结开关默认关闭；模型端点和密钥由云端统一维护。</p>
+            </div>
+
+            <div class="settings-card">
+              <div class="setting-row">
+                <div>
+                  <label for="ai-provider-input">AI 产品</label>
+                  <p>用户只选择使用哪个 AI 产品，实际调用配置会在服务器端管理。</p>
+                </div>
+                <select id="ai-provider-input" class="control">
+                  <option value="minimax">MiniMax</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="claude">Claude</option>
+                  <option value="gemini">Gemini</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="qwen">通义千问</option>
+                  <option value="kimi">Kimi</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <label for="ai-summary-style-input">总结风格</label>
+                  <p>决定 AI 把对话整理成什么类型的笔记结构。</p>
+                </div>
+                <select id="ai-summary-style-input" class="control">
+                  <option value="knowledge">知识库笔记</option>
+                  <option value="meeting">会议纪要</option>
+                  <option value="tutorial">教程步骤</option>
+                  <option value="research">研究摘要</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <input id="vault-directory-input" class="hidden-file-input" type="file" webkitdirectory directory>
+          <input id="folder-directory-input" class="hidden-file-input" type="file" webkitdirectory directory>
+        </section>
+      </div>
+    </main>
+
+    <script src="src/settings.js"></script>
+    <script src="src/cloud.js"></script>
+    <script src="src/options.js"></script>
+  </body>
+</html>

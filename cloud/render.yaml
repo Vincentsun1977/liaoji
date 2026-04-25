@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: liaoji-cloud
+    runtime: node
+    plan: starter
+    rootDir: chat_restore_note/cloud
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: MINIMAX_BASE_URL
+        value: https://api.minimaxi.com/v1
+      - key: MINIMAX_MODEL
+        value: MiniMax-M2.7
+      - key: MINIMAX_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
