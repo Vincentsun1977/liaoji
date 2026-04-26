@@ -481,11 +481,13 @@
       membershipUpgradeButton.textContent = '立即升级 Pro';
     }
     resetMembershipActionButtons();
+    document.body.classList.add('has-membership-modal');
     membershipModal.hidden = false;
   }
 
   function hideMembershipModal() {
     membershipModal.hidden = true;
+    document.body.classList.remove('has-membership-modal');
   }
 
   async function handleMembershipAction(event) {
