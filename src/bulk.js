@@ -483,16 +483,19 @@
       membershipUpgradeButton.textContent = '开通会员';
     }
 
+    resetMembershipActionButtons();
     membershipOverlay.hidden = false;
     setControlsDisabled(true);
     setStatus('需要会员');
   }
 
-  async function handleMembershipAction() {
-    const isUpgrade = document.activeElement === membershipUpgradeButton;
+  async function handleMembershipAction(event) {
+    const button = event?.currentTarget || document.activeElement;
+    const isUpgrade = button === membershipUpgradeButton;
     const action = isUpgrade
       ? window.ChatRestoreCloud.openCheckout
       : window.ChatRestoreCloud.openLogin;
+    setMembershipActionBusy(button, true, isUpgrade ? '正在打开' : '正在登录');
     try {
       await action();
       await updatePlanBadge();
@@ -500,7 +503,32 @@
       if (await hasProAccess()) membershipOverlay.hidden = true;
     } catch (error) {
       log(error?.message || '会员操作失败。', true);
+    } finally {
+      setMembershipActionBusy(button, false);
     }
+  }
+
+  function setMembershipActionBusy(activeButton, isBusy, busyLabel = '') {
+    [membershipLoginButton, membershipUpgradeButton].forEach((button) => {
+      if (!button) return;
+      if (!button.dataset.idleText) button.dataset.idleText = button.textContent;
+      button.disabled = isBusy;
+      button.classList.toggle('is-loading', isBusy && button === activeButton);
+      button.setAttribute('aria-busy', isBusy && button === activeButton ? 'true' : 'false');
+      button.textContent = isBusy && button === activeButton
+        ? busyLabel
+        : button.dataset.idleText;
+    });
+  }
+
+  function resetMembershipActionButtons() {
+    [membershipLoginButton, membershipUpgradeButton].forEach((button) => {
+      if (!button) return;
+      button.dataset.idleText = button.textContent;
+      button.disabled = false;
+      button.classList.remove('is-loading');
+      button.setAttribute('aria-busy', 'false');
+    });
   }
 
   function hasChromeStorage() {
