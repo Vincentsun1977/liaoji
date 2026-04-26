@@ -48,11 +48,18 @@
     messages.forEach((message, index) => {
       const role = normalizeRole(message.role);
       const content = clean(message.content);
-      if (!content) return;
+      const images = normalizeImages(message.images);
+      if (!content && !images.length) return;
       lines.push(`### ${index + 1}. ${role}`);
       lines.push('');
-      lines.push(content);
-      lines.push('');
+      if (content) {
+        lines.push(content);
+        lines.push('');
+      }
+      if (images.length) {
+        lines.push(...formatImages(images));
+        lines.push('');
+      }
     });
 
     if (!messages.length) {
@@ -153,6 +160,35 @@
 
   function escapeTable(value) {
     return clean(value).replace(/\|/g, '\\|').replace(/\n+/g, '<br>');
+  }
+
+  function normalizeImages(images) {
+    const seen = new Set();
+    return (Array.isArray(images) ? images : [])
+      .map((image) => ({
+        url: clean(image?.url || image),
+        alt: clean(image?.alt || '聊天图片'),
+      }))
+      .filter((image) => {
+        if (!image.url || seen.has(image.url)) return false;
+        seen.add(image.url);
+        return true;
+      });
+  }
+
+  function formatImages(images) {
+    return images.map((image, index) => {
+      const alt = image.alt || `聊天图片 ${index + 1}`;
+      return `![${escapeMarkdownAlt(alt)}](${encodeMarkdownUrl(image.url)})`;
+    });
+  }
+
+  function escapeMarkdownAlt(value) {
+    return clean(value).replace(/[[\]]/g, '');
+  }
+
+  function encodeMarkdownUrl(value) {
+    return clean(value).replace(/\)/g, '%29').replace(/\(/g, '%28');
   }
 
   function clean(value) {

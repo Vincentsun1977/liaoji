@@ -397,11 +397,13 @@
       seenTurns.add(turn);
 
       const content = extractChatGptMessageText(roleNode, turn, role);
-      if (!isUsefulMessage(content)) return;
+      const images = extractImageLinks(turn);
+      if (!isUsefulMessage(content) && !images.length) return;
 
       items.push({
         role,
         content,
+        images,
         top: turn.getBoundingClientRect().top + window.scrollY,
       });
     });
@@ -489,11 +491,13 @@
         seenNodes.add(node);
 
         const content = cleanupMessageText(node);
-        if (!isUsefulMessage(content)) return;
+        const images = extractImageLinks(node);
+        if (!isUsefulMessage(content) && !images.length) return;
 
         items.push({
           role: config.role,
           content,
+          images,
           top: node.getBoundingClientRect().top + window.scrollY,
           node,
         });
@@ -535,11 +539,12 @@
       compact.push({
         role: item.role,
         content: item.content,
+        images: item.images || [],
         top: item.top,
       });
     });
 
-    return compact.sort((left, right) => left.top - right.top).map(({ role, content }) => ({ role, content }));
+    return compact.sort((left, right) => left.top - right.top).map(({ role, content, images }) => ({ role, content, images }));
   }
 
   function extractClaudeByUserIntervals(userItems) {
@@ -553,6 +558,7 @@
       messages.push({
         role: 'user',
         content: user.content,
+        images: user.images || [],
       });
 
       const nextUser = users[index + 1];
@@ -563,6 +569,7 @@
         messages.push({
           role: 'assistant',
           content: assistant,
+          images: [],
         });
       }
     });
@@ -612,17 +619,19 @@
         seenNodes.add(node);
 
         const content = cleanupMessageText(node);
-        if (!isUsefulMessage(content)) return;
+        const images = extractImageLinks(node);
+        if (!isUsefulMessage(content) && !images.length) return;
 
         collected.push({
           role: resolveRole(node, config, content),
           content,
+          images,
           top: node.getBoundingClientRect().top + window.scrollY,
         });
       });
     });
 
-    return collected.sort((left, right) => left.top - right.top).map(({ role, content }) => ({ role, content }));
+    return collected.sort((left, right) => left.top - right.top).map(({ role, content, images }) => ({ role, content, images }));
   }
 
   function extractGenericMessages() {
@@ -646,6 +655,7 @@
     return compact.slice(-80).map((item, index) => ({
       role: inferRoleFromText(item.text, index),
       content: item.text,
+      images: extractImageLinks(item.node),
     }));
   }
 
@@ -699,10 +709,76 @@
       result.push({
         role: normalizeRole(message.role),
         content,
+        images: dedupeImages(message.images || []),
       });
     });
 
     return result;
+  }
+
+  function extractImageLinks(root) {
+    const links = [];
+    const seen = new Set();
+
+    root.querySelectorAll('img').forEach((img) => {
+      const src = resolveImageUrl(
+        img.currentSrc
+        || img.src
+        || img.getAttribute('src')
+        || img.getAttribute('data-src')
+        || img.getAttribute('data-original')
+      );
+      if (!isUsefulImageUrl(src) || seen.has(src)) return;
+      seen.add(src);
+      links.push({
+        url: src,
+        alt: normalizeText(img.alt || img.getAttribute('aria-label') || '聊天图片'),
+      });
+    });
+
+    root.querySelectorAll('a[href]').forEach((anchor) => {
+      const href = resolveImageUrl(anchor.href || anchor.getAttribute('href'));
+      if (!isUsefulImageUrl(href) || seen.has(href)) return;
+      seen.add(href);
+      links.push({
+        url: href,
+        alt: normalizeText(anchor.textContent || '聊天图片'),
+      });
+    });
+
+    return links.slice(0, 12);
+  }
+
+  function resolveImageUrl(value) {
+    const raw = String(value || '').trim();
+    if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return '';
+    try {
+      return new URL(raw, location.href).toString();
+    } catch (_error) {
+      return '';
+    }
+  }
+
+  function isUsefulImageUrl(url) {
+    if (!url) return false;
+    if (/\/(favicon|apple-touch-icon|manifest|logo)([./_-]|$)/i.test(url)) return false;
+    if (/\.(svg)(\?|#|$)/i.test(url)) return false;
+    if (/\.(png|jpe?g|webp|gif|avif)(\?|#|$)/i.test(url)) return true;
+    return /(image|file|attachment|oaiusercontent|oaidalleapiprodscus|cdn\.openai|chatgpt|claude|googleusercontent|gemini)/i.test(url);
+  }
+
+  function dedupeImages(images) {
+    const seen = new Set();
+    return (Array.isArray(images) ? images : [])
+      .map((image) => ({
+        url: resolveImageUrl(image?.url || image),
+        alt: normalizeText(image?.alt || '聊天图片'),
+      }))
+      .filter((image) => {
+        if (!isUsefulImageUrl(image.url) || seen.has(image.url)) return false;
+        seen.add(image.url);
+        return true;
+      });
   }
 
   function firstText(selectors) {
