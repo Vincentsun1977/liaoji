@@ -486,7 +486,7 @@
     try {
       await action();
       await updatePlanBadge();
-      setStatus(isUpgrade ? '已打开付款页面' : '登录成功');
+      setStatus(isUpgrade ? '已打开会员码激活入口' : '登录成功');
       hideMembershipModal();
     } catch (error) {
       setStatus(error?.message || '会员操作失败', true);

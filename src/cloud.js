@@ -55,7 +55,7 @@
         lastAuthError: error?.message || 'Google 登录失败',
       });
       chrome.tabs.create({ url: authUrl });
-      throw new Error('授权页加载失败，已在新标签页打开登录链接。请检查 Supabase Google Provider 和 Redirect URL 配置。');
+      throw new Error('已在新标签页打开登录链接，请完成 Google 登录后回到插件刷新状态。');
     }
 
     const session = parseSupabaseSession(redirectUrl);

@@ -555,6 +555,15 @@ textarea:focus {
   font-weight: 750;
 }
 
+.plan-price s {
+  text-decoration-thickness: 3px;
+  text-decoration-color: rgba(17, 24, 39, 0.45);
+}
+
+.is-free-price {
+  color: #6b7280;
+}
+
 .plan-card ul {
   display: grid;
   gap: 10px;

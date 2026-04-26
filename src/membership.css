@@ -105,48 +105,6 @@ button:not(:disabled):active {
   color: var(--muted);
 }
 
-.billing-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  color: #8a92a1;
-  font-size: 13px;
-  font-weight: 780;
-}
-
-.billing-toggle i {
-  position: relative;
-  width: 48px;
-  height: 27px;
-  border-radius: 999px;
-  background: #111113;
-}
-
-.billing-toggle i::after {
-  position: absolute;
-  top: 4px;
-  right: 5px;
-  width: 19px;
-  height: 19px;
-  border-radius: 999px;
-  background: #fff;
-  content: "";
-}
-
-.billing-toggle strong {
-  color: var(--ink);
-}
-
-.billing-toggle em {
-  border-radius: 999px;
-  padding: 4px 9px;
-  background: #eceef2;
-  color: #596171;
-  font-size: 11px;
-  font-style: normal;
-}
-
 .plan-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -190,10 +148,19 @@ button:not(:disabled):active {
   line-height: 1;
 }
 
+.plan-price s {
+  text-decoration-thickness: 4px;
+  text-decoration-color: rgba(17, 24, 39, 0.45);
+}
+
 .plan-price span {
   color: var(--muted);
   font-size: 16px;
   font-weight: 760;
+}
+
+.is-free-price {
+  color: #6b7280;
 }
 
 .plan-card ul {

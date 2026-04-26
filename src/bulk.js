@@ -509,7 +509,7 @@
     try {
       await action();
       await updatePlanBadge();
-      log(isUpgrade ? '已打开付款页面。' : '登录成功。');
+      log(isUpgrade ? '已打开会员码激活入口。' : '登录成功。');
       if (await hasProAccess()) membershipOverlay.hidden = true;
     } catch (error) {
       log(error?.message || '会员操作失败。', true);

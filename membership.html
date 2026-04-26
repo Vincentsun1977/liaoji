@@ -19,12 +19,6 @@
       <section class="hero">
         <h1 id="membership-title">开通会员订阅</h1>
         <p id="membership-message">一杯奶茶的价格，让灵感有处安放，让知识持续生长</p>
-        <div class="billing-toggle" aria-label="计费方式">
-          <span>月付</span>
-          <i aria-hidden="true"></i>
-          <strong>年付</strong>
-          <em>省 20%</em>
-        </div>
       </section>
 
       <section class="plan-grid" aria-label="会员方案">
@@ -33,7 +27,7 @@
             <h2>Free</h2>
             <p>适合轻量使用，满足日常单次保存需求。</p>
           </div>
-          <div class="plan-price">¥ 0</div>
+          <div class="plan-price is-free-price">¥ 0</div>
           <ul>
             <li><strong>当前页面一键导出</strong><span>支持将当前 AI 对话页面快速导出。</span></li>
             <li><strong>每日最多 5 次导出</strong><span>满足基础的日常笔记保存需求。</span></li>
@@ -49,8 +43,8 @@
             <h2>Pro 会员</h2>
             <p>适合重度用户、知识管理用户与长期 AI 对话沉淀场景。</p>
           </div>
-          <div class="plan-price">¥ 12 <span>/ 月</span></div>
-          <small>按年计费 ¥144/年，随时取消</small>
+          <div class="plan-price"><s>¥ 12</s></div>
+          <small>内测阶段暂不收费，使用会员码激活 30 天 Pro。</small>
           <ul>
             <li><strong>历史对话批量导出</strong><span>一键导出历史 AI 对话，并同步至笔记系统。</span></li>
             <li><strong>不限次数导出</strong><span>不受每日导出次数限制，随时保存重要内容。</span></li>
@@ -67,7 +61,7 @@
         <button id="upgrade-button" class="primary-button" type="button">输入会员码激活</button>
       </section>
 
-      <p class="fine-print">支持微信 / 支付宝支付。对 Pro 会员不满意？14 天内无理由退款。</p>
+      <p class="fine-print">本插件目前只做个人学习交流，暂时不收取任何费用，后续功能会持续迭代。</p>
     </main>
 
     <script src="src/settings.js"></script>
