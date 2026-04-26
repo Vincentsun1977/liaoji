@@ -471,14 +471,14 @@
     const membership = await window.ChatRestoreCloud.getMembership();
     if (membership.authenticated && !membership.pro) {
       membershipTitle.textContent = '已登录，尚未开通 Pro';
-      membershipMessage.textContent = '你的账号已登录成功，但批量导出和 AI 总结需要 Pro 会员。当前页单次导出仍可免费使用。';
+      membershipMessage.textContent = '当前页单次导出仍可免费使用。升级 Pro 后可解锁批量导出和 AI 智能总结。';
       membershipLoginButton.textContent = '重新登录';
-      membershipUpgradeButton.textContent = '开通 Pro';
+      membershipUpgradeButton.textContent = '立即升级 Pro';
     } else {
-      membershipTitle.textContent = title || '解锁会员功能';
-      membershipMessage.textContent = message || '批量导出和 AI 总结属于 Pro 功能。';
+      membershipTitle.textContent = title || '选择适合您的计划';
+      membershipMessage.textContent = message || '无论您是偶尔收集灵感，还是构建长期个人知识库，我们都有适合您的方案。';
       membershipLoginButton.textContent = '登录 / 注册';
-      membershipUpgradeButton.textContent = '开通会员';
+      membershipUpgradeButton.textContent = '立即升级 Pro';
     }
     resetMembershipActionButtons();
     membershipModal.hidden = false;

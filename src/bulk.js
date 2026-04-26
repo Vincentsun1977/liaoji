@@ -472,15 +472,15 @@
     if (membership.authenticated && !membership.pro) {
       membershipKicker.textContent = 'ACCOUNT READY';
       membershipTitle.textContent = '已登录，尚未开通 Pro';
-      membershipMessage.textContent = 'Supabase 登录已经成功，但批量导出需要 Pro 会员。请开通 Pro，或在 Supabase memberships 表中为当前用户设置试用会员。';
+      membershipMessage.textContent = '当前页单次导出仍可免费使用。升级 Pro 后可解锁批量导出和 AI 智能总结。';
       membershipLoginButton.textContent = '重新登录';
-      membershipUpgradeButton.textContent = '开通 Pro';
+      membershipUpgradeButton.textContent = '立即升级 Pro';
     } else {
-      membershipKicker.textContent = 'PRO BATCH EXPORT';
-      membershipTitle.textContent = '批量导出需要 Pro';
-      membershipMessage.textContent = '当前页单次导出可以免费使用。批量扫描历史对话、批量写入笔记和 AI 总结会作为会员功能开放。';
+      membershipKicker.textContent = '会员方案';
+      membershipTitle.textContent = '选择适合您的计划';
+      membershipMessage.textContent = '无论您是偶尔收集灵感，还是构建长期个人知识库，我们都有适合您的方案。';
       membershipLoginButton.textContent = '登录 / 注册';
-      membershipUpgradeButton.textContent = '开通会员';
+      membershipUpgradeButton.textContent = '立即升级 Pro';
     }
 
     resetMembershipActionButtons();

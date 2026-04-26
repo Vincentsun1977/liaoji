@@ -93,17 +93,53 @@
 
       <section id="membership-overlay" class="membership-overlay" hidden aria-label="会员功能">
         <div class="membership-card">
-          <div id="membership-kicker" class="membership-kicker">PRO BATCH EXPORT</div>
-          <h2 id="membership-title">批量导出需要 Pro</h2>
-          <p id="membership-message">当前页单次导出可以免费使用。批量扫描历史对话、批量写入笔记和 AI 总结会作为会员功能开放。</p>
-          <div class="benefit-grid">
-            <span>批量扫描历史对话</span>
-            <span>多选导出到笔记</span>
-            <span>AI 整理知识库笔记</span>
+          <div class="membership-heading">
+            <div id="membership-kicker" class="membership-kicker">会员方案</div>
+            <h2 id="membership-title">选择适合您的计划</h2>
+            <p id="membership-message">无论您是偶尔收集灵感，还是构建长期个人知识库，我们都有适合您的方案。</p>
+            <div class="billing-toggle" aria-label="计费方式">
+              <span>月付</span>
+              <i aria-hidden="true"></i>
+              <strong>年付</strong>
+              <em>省 20%</em>
+            </div>
+          </div>
+          <div class="plan-grid">
+            <article class="plan-card free-plan">
+              <div>
+                <h3>Free</h3>
+                <p>适合轻量使用，满足日常单次保存需求。</p>
+              </div>
+              <div class="plan-price">¥ 0</div>
+              <ul>
+                <li>当前页面一键导出</li>
+                <li>每日最多 5 次导出</li>
+                <li>标准 Markdown 格式</li>
+                <li>导出至指定 Obsidian 库</li>
+              </ul>
+              <button class="current-plan-button" type="button" disabled>当前计划</button>
+            </article>
+            <article class="plan-card pro-plan">
+              <span class="popular-badge">最受欢迎</span>
+              <div>
+                <h3>Pro 会员</h3>
+                <p>适合重度用户、知识管理用户与长期 AI 对话沉淀场景。</p>
+              </div>
+              <div class="plan-price">¥ 12 <span>/ 月</span></div>
+              <small>按年计费 ¥144/年，随时取消</small>
+              <ul>
+                <li>历史对话批量导出</li>
+                <li>不限次数导出</li>
+                <li>AI 智能总结不限量</li>
+                <li>自定义知识库导出模板</li>
+                <li>多平台笔记同步</li>
+                <li>优先体验新功能</li>
+              </ul>
+            </article>
           </div>
           <div class="membership-actions">
             <button id="membership-login-button" class="ghost-button" type="button">登录 / 注册</button>
-            <button id="membership-upgrade-button" class="dark-button" type="button">开通会员</button>
+            <button id="membership-upgrade-button" class="dark-button" type="button">立即升级 Pro</button>
           </div>
           <button id="membership-back-button" class="text-button" type="button">返回当前聊天</button>
         </div>
