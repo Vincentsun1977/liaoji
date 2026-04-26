@@ -8,6 +8,7 @@
     hasProAccess,
     openLogin,
     openCheckout,
+    redeemLicenseCode,
     signOut,
     summarizeMarkdown,
   };
@@ -87,6 +88,21 @@
     });
     if (!data?.url) throw new Error('云端没有返回付款链接');
     chrome.tabs.create({ url: data.url });
+  }
+
+  async function redeemLicenseCode(code) {
+    const token = await getFreshSessionToken();
+    if (!token) throw new Error('请先登录账号');
+    const data = await cloudRequest('/v1/license/redeem', {
+      token,
+      method: 'POST',
+      body: { code },
+    });
+    await chrome.storage.local.set({
+      membershipPlan: data.plan || 'pro',
+      membershipExpiresAt: data.membership_expires_at || '',
+    });
+    return data;
   }
 
   async function summarizeMarkdown(payload) {

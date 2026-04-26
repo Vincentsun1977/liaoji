@@ -17,8 +17,9 @@
   const planBadge = document.getElementById('plan-badge');
   const refreshMembershipButton = document.getElementById('refresh-membership-button');
   const loginButton = document.getElementById('login-button');
-  const upgradeButton = document.getElementById('upgrade-button');
   const logoutButton = document.getElementById('logout-button');
+  const licenseCodeInput = document.getElementById('license-code-input');
+  const redeemLicenseButton = document.getElementById('redeem-license-button');
 
   vaultPickerButton.addEventListener('click', chooseVault);
   vaultDirectoryInput.addEventListener('change', chooseVaultFromInput);
@@ -26,8 +27,8 @@
   folderDirectoryInput.addEventListener('change', chooseFolderFromInput);
   refreshMembershipButton.addEventListener('click', refreshMembership);
   loginButton.addEventListener('click', login);
-  upgradeButton.addEventListener('click', upgrade);
   logoutButton.addEventListener('click', logout);
+  redeemLicenseButton.addEventListener('click', redeemLicense);
 
   [
     vaultInput,
@@ -68,13 +69,26 @@
     }
   }
 
-  async function upgrade() {
+  async function redeemLicense() {
+    const code = licenseCodeInput.value.trim();
+    if (!code) {
+      setStatus('请输入会员码', true);
+      licenseCodeInput.focus();
+      return;
+    }
     try {
-      setStatus('正在打开付款页');
-      await window.ChatRestoreCloud.openCheckout();
-      setStatus('已打开付款页');
+      redeemLicenseButton.disabled = true;
+      redeemLicenseButton.textContent = '正在激活';
+      setStatus('正在激活会员码');
+      await window.ChatRestoreCloud.redeemLicenseCode(code);
+      licenseCodeInput.value = '';
+      await updateAccountStatus();
+      setStatus('Pro 已激活');
     } catch (error) {
-      setStatus(error?.message || '开通失败', true);
+      setStatus(error?.message || '会员码激活失败', true);
+    } finally {
+      redeemLicenseButton.disabled = false;
+      redeemLicenseButton.textContent = '激活 Pro';
     }
   }
 

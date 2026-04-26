@@ -48,8 +48,20 @@
                 <span id="plan-badge" class="plan-badge is-free">Free</span>
                 <button id="refresh-membership-button" class="link-button" type="button">刷新状态</button>
                 <button id="login-button" class="link-button" type="button">重新登录</button>
-                <button id="upgrade-button" class="solid-button" type="button">开通 Pro</button>
                 <button id="logout-button" class="link-button muted" type="button" hidden>退出</button>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <div class="setting-row license-row">
+                <div>
+                  <label for="license-code-input">会员码激活</label>
+                  <p>输入授权会员码后，可开通 30 天 Pro 会员。</p>
+                </div>
+                <div class="control license-control">
+                  <input id="license-code-input" type="text" placeholder="LJ-PRO-XXXX-XXXX-XXXX" autocomplete="off">
+                  <button id="redeem-license-button" class="solid-button" type="button">激活 Pro</button>
+                </div>
               </div>
             </div>
           </section>

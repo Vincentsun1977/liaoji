@@ -10,6 +10,7 @@ This service is the server-side boundary for membership, billing, and AI summary
 - `GET /auth/login`
 - `GET /auth/checkout`
 - `POST /v1/billing/checkout`
+- `POST /v1/license/redeem`
 - `POST /webhooks/stripe`
 - `POST /v1/ai/summary`
 
@@ -26,6 +27,7 @@ MINIMAX_API_KEY=your_server_side_key
 STRIPE_SECRET_KEY=sk_live_or_test_xxx
 STRIPE_PRICE_ID=price_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
+LICENSE_CODE_SALT=replace_with_a_long_random_secret
 ```
 
 Run `schema.sql` in the Supabase SQL editor before enabling paid membership.
@@ -77,6 +79,19 @@ update public.app_settings
 set value = '3'::jsonb, updated_at = now()
 where key = 'free_daily_export_limit';
 ```
+
+## License Codes
+
+During the no-payment beta, Pro access can be activated with 30-day license codes. Codes are never stored in plain text; the database stores `code_hash`, generated with `LICENSE_CODE_SALT`.
+
+Generate codes locally:
+
+```bash
+LICENSE_CODE_SALT=your_render_license_salt \
+node cloud/scripts/generate-license-codes.mjs --count 20 --days 30 --label "Beta Pro 30 days"
+```
+
+Save the plain codes shown in the terminal, then paste the generated SQL into Supabase SQL Editor. Users redeem a code through `POST /v1/license/redeem`; the server writes a 30-day Pro membership into `public.memberships`.
 
 ## Deploy on Render
 
@@ -139,7 +154,36 @@ https://<chrome-extension-id>.chromiumapp.org/supabase
 
 You can find the extension id on `chrome://extensions` after loading the unpacked extension. The extension stores the returned Supabase access token in `chrome.storage.local.cloudSessionToken` and sends it to the cloud API as a Bearer token.
 
-## Membership Flow
+## License Membership Flow
+
+1. Admin generates 30-day Pro license codes locally.
+2. Admin inserts only `code_hash` into `public.license_codes`.
+3. User logs in with Google in the extension.
+4. User enters the license code in settings.
+5. Extension calls `POST /v1/license/redeem`.
+6. Server validates the hash, records `public.license_redemptions`, and upserts `public.memberships` for 30 days.
+
+Redeem request:
+
+```bash
+curl -sS -X POST https://your-cloud-api.example.com/v1/license/redeem \
+  -H 'Authorization: Bearer <Supabase access token>' \
+  -H 'Content-Type: application/json' \
+  -d '{"code":"LJ-PRO-XXXX-XXXX-XXXX"}'
+```
+
+Expected response:
+
+```json
+{
+  "ok": true,
+  "plan": "pro",
+  "status": "active",
+  "membership_expires_at": "2026-05-26T00:00:00.000Z"
+}
+```
+
+## Payment Membership Flow
 
 1. Extension calls `GET /v1/me` with `Authorization: Bearer <Supabase JWT>`.
 2. Server verifies the JWT with Supabase Auth.

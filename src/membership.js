@@ -33,10 +33,13 @@
   }
 
   async function handleUpgrade(event) {
-    await runMembershipAction(event.currentTarget, '正在打开', async () => {
-      await window.ChatRestoreCloud.openCheckout();
-      await updatePlanBadge();
-    });
+    const button = event.currentTarget;
+    setActionBusy(button, true, '正在打开');
+    try {
+      chrome.runtime.openOptionsPage();
+    } finally {
+      window.setTimeout(() => setActionBusy(button, false), 400);
+    }
   }
 
   async function runMembershipAction(button, label, action) {

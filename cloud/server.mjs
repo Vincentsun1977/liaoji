@@ -13,6 +13,7 @@ const MINIMAX_BASE_URL = (process.env.MINIMAX_BASE_URL || 'https://api.minimaxi.
 const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.7';
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || '';
 const DEV_PRO_TOKEN = process.env.DEV_PRO_TOKEN || 'dev-pro-token';
+const LICENSE_CODE_SALT = process.env.LICENSE_CODE_SALT || 'liaoji-local-license-salt';
 const DEFAULT_APP_CONFIG = {
   free_daily_export_limit: 5,
   free_ai_summary_limit: 0,
@@ -50,6 +51,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/v1/billing/checkout') {
       return handleCheckout(req, res);
+    }
+
+    if (req.method === 'POST' && url.pathname === '/v1/license/redeem') {
+      return handleLicenseRedeem(req, res);
     }
 
     if (req.method === 'POST' && url.pathname === '/webhooks/stripe') {
@@ -148,6 +153,55 @@ async function handleCheckout(req, res) {
     cancelUrl: body.cancel_url || `${PUBLIC_BASE_URL}/auth/checkout`,
   });
   return sendJson(res, 200, { url: session.url, id: session.id });
+}
+
+async function handleLicenseRedeem(req, res) {
+  const token = getBearerToken(req);
+  const user = await resolveUser(token);
+  if (!user) return sendJson(res, 401, { error: '请先登录账号' });
+
+  const body = await readJson(req);
+  const code = normalizeLicenseCode(body.code);
+  if (!code) return sendJson(res, 400, { error: '请输入会员码' });
+
+  const license = await getLicenseByCode(code);
+  if (!license) return sendJson(res, 404, { error: '会员码无效' });
+  if (!['active', 'unused'].includes(license.status || '')) {
+    return sendJson(res, 409, { error: '会员码不可用' });
+  }
+  if (license.expires_at && new Date(license.expires_at).getTime() <= Date.now()) {
+    return sendJson(res, 409, { error: '会员码已过期' });
+  }
+
+  const maxRedemptions = Number(license.max_redemptions || 1);
+  const redeemedCount = Number(license.redeemed_count || 0);
+  if (redeemedCount >= maxRedemptions) {
+    return sendJson(res, 409, { error: '会员码已被使用' });
+  }
+
+  const days = Math.max(1, Number(license.duration_days || 30));
+  const membershipExpiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+  await upsertMembership({
+    user_id: user.id,
+    email: user.email || '',
+    plan: license.plan || 'pro',
+    status: 'active',
+    current_period_end: membershipExpiresAt,
+  });
+  await recordLicenseRedemption({
+    license_code_id: license.id,
+    user_id: user.id,
+    email: user.email || '',
+  });
+  await updateLicenseAfterRedemption(license.id, redeemedCount + 1, maxRedemptions);
+
+  return sendJson(res, 200, {
+    ok: true,
+    plan: license.plan || 'pro',
+    status: 'active',
+    membership_expires_at: membershipExpiresAt,
+  });
 }
 
 async function handleStripeWebhook(req, res) {
@@ -312,6 +366,35 @@ async function getAppConfig() {
   }
 }
 
+async function getLicenseByCode(code) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('云端会员码服务尚未配置：缺少 SUPABASE_SERVICE_ROLE_KEY');
+  }
+
+  const codeHash = hashLicenseCode(code);
+  const rows = await supabaseRest(`/rest/v1/license_codes?code_hash=eq.${encodeURIComponent(codeHash)}&select=*&limit=1`);
+  return Array.isArray(rows) ? rows[0] || null : null;
+}
+
+async function recordLicenseRedemption(payload) {
+  await supabaseRest('/rest/v1/license_redemptions', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+async function updateLicenseAfterRedemption(licenseId, redeemedCount, maxRedemptions) {
+  const status = redeemedCount >= maxRedemptions ? 'redeemed' : 'active';
+  await supabaseRest(`/rest/v1/license_codes?id=eq.${encodeURIComponent(licenseId)}`, {
+    method: 'PATCH',
+    body: {
+      redeemed_count: redeemedCount,
+      status,
+      updated_at: new Date().toISOString(),
+    },
+  });
+}
+
 async function findUserIdBySubscription(subscriptionId) {
   if (!subscriptionId) return '';
   const rows = await supabaseRest(`/rest/v1/memberships?stripe_subscription_id=eq.${encodeURIComponent(subscriptionId)}&select=user_id&limit=1`);
@@ -419,6 +502,20 @@ function getBearerToken(req) {
   const header = req.headers.authorization || '';
   const match = header.match(/^Bearer\s+(.+)$/i);
   return match ? match[1].trim() : '';
+}
+
+function normalizeLicenseCode(code) {
+  return String(code || '')
+    .trim()
+    .replace(/\s+/g, '')
+    .toUpperCase();
+}
+
+function hashLicenseCode(code) {
+  return crypto
+    .createHash('sha256')
+    .update(`${LICENSE_CODE_SALT}:${normalizeLicenseCode(code)}`)
+    .digest('hex');
 }
 
 function readJson(req) {
