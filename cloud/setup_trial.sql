@@ -24,6 +24,37 @@ create policy "Users can read own membership"
   for select
   using (auth.uid() = user_id);
 
+create table if not exists public.app_settings (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.app_settings enable row level security;
+
+drop policy if exists "Anyone can read app settings" on public.app_settings;
+create policy "Anyone can read app settings"
+  on public.app_settings
+  for select
+  using (true);
+
+drop policy if exists "Service role can manage app settings" on public.app_settings;
+create policy "Service role can manage app settings"
+  on public.app_settings
+  for all
+  using (auth.jwt() ->> 'role' = 'service_role')
+  with check (auth.jwt() ->> 'role' = 'service_role');
+
+insert into public.app_settings (key, value)
+values
+  ('free_daily_export_limit', '5'::jsonb),
+  ('free_ai_summary_limit', '0'::jsonb),
+  ('pro_daily_export_limit', 'null'::jsonb),
+  ('pro_ai_summary_limit', 'null'::jsonb),
+  ('batch_export_requires_pro', 'true'::jsonb),
+  ('ai_summary_requires_pro', 'true'::jsonb)
+on conflict (key) do nothing;
+
 insert into public.memberships (
   user_id,
   email,

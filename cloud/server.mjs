@@ -13,6 +13,14 @@ const MINIMAX_BASE_URL = (process.env.MINIMAX_BASE_URL || 'https://api.minimaxi.
 const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.7';
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || '';
 const DEV_PRO_TOKEN = process.env.DEV_PRO_TOKEN || 'dev-pro-token';
+const DEFAULT_APP_CONFIG = {
+  free_daily_export_limit: 5,
+  free_ai_summary_limit: 0,
+  pro_daily_export_limit: null,
+  pro_ai_summary_limit: null,
+  batch_export_requires_pro: true,
+  ai_summary_requires_pro: true,
+};
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -26,6 +34,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/v1/me') {
       return handleMe(req, res);
+    }
+
+    if (req.method === 'GET' && url.pathname === '/v1/config') {
+      return handleConfig(req, res);
     }
 
     if (req.method === 'GET' && url.pathname === '/auth/login') {
@@ -90,6 +102,15 @@ async function handleMe(req, res) {
     plan: membership?.plan || 'free',
     status: membership?.status || 'inactive',
     membership_expires_at: membership?.current_period_end || '',
+  });
+}
+
+async function handleConfig(_req, res) {
+  const result = await getAppConfig();
+  return sendJson(res, 200, {
+    ok: true,
+    config: result.config,
+    source: result.source,
   });
 }
 
@@ -263,6 +284,32 @@ async function getMembershipByUserId(userId, userToken = '') {
     bearerToken,
   });
   return Array.isArray(rows) ? rows[0] || null : null;
+}
+
+async function getAppConfig() {
+  try {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      return { config: { ...DEFAULT_APP_CONFIG }, source: 'default' };
+    }
+
+    const accessKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+    const bearerToken = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+    const rows = await supabaseRest('/rest/v1/app_settings?select=key,value', {
+      accessKey,
+      bearerToken,
+    });
+    const config = { ...DEFAULT_APP_CONFIG };
+    if (Array.isArray(rows)) {
+      rows.forEach((row) => {
+        if (Object.prototype.hasOwnProperty.call(config, row.key)) {
+          config[row.key] = row.value;
+        }
+      });
+    }
+    return { config, source: 'supabase' };
+  } catch (_error) {
+    return { config: { ...DEFAULT_APP_CONFIG }, source: 'default' };
+  }
 }
 
 async function findUserIdBySubscription(subscriptionId) {

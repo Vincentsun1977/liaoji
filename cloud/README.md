@@ -5,6 +5,7 @@ This service is the server-side boundary for membership, billing, and AI summary
 ## Endpoints
 
 - `GET /health`
+- `GET /v1/config`
 - `GET /v1/me`
 - `GET /auth/login`
 - `GET /auth/checkout`
@@ -47,6 +48,35 @@ chrome.storage.local.set({ cloudSessionToken: 'dev-pro-token' })
 ```
 
 The public extension UI should not expose AI endpoint or API key fields. Those belong on the server.
+
+## Remote Config
+
+`GET /v1/config` returns server-controlled product limits and feature gates. If Supabase is not reachable or the `app_settings` table is missing, the server returns built-in defaults so the extension can keep working.
+
+Default response:
+
+```json
+{
+  "ok": true,
+  "source": "supabase",
+  "config": {
+    "free_daily_export_limit": 5,
+    "free_ai_summary_limit": 0,
+    "pro_daily_export_limit": null,
+    "pro_ai_summary_limit": null,
+    "batch_export_requires_pro": true,
+    "ai_summary_requires_pro": true
+  }
+}
+```
+
+To change a setting manually in Supabase SQL Editor:
+
+```sql
+update public.app_settings
+set value = '3'::jsonb, updated_at = now()
+where key = 'free_daily_export_limit';
+```
 
 ## Deploy on Render
 
