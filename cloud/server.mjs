@@ -34,11 +34,11 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'GET' && url.pathname === '/v1/me') {
-      return handleMe(req, res);
+      return await handleMe(req, res);
     }
 
     if (req.method === 'GET' && url.pathname === '/v1/config') {
-      return handleConfig(req, res);
+      return await handleConfig(req, res);
     }
 
     if (req.method === 'GET' && url.pathname === '/auth/login') {
@@ -50,19 +50,19 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'POST' && url.pathname === '/v1/billing/checkout') {
-      return handleCheckout(req, res);
+      return await handleCheckout(req, res);
     }
 
     if (req.method === 'POST' && url.pathname === '/v1/license/redeem') {
-      return handleLicenseRedeem(req, res);
+      return await handleLicenseRedeem(req, res);
     }
 
     if (req.method === 'POST' && url.pathname === '/webhooks/stripe') {
-      return handleStripeWebhook(req, res);
+      return await handleStripeWebhook(req, res);
     }
 
     if (req.method === 'POST' && url.pathname === '/v1/ai/summary') {
-      return handleSummary(req, res);
+      return await handleSummary(req, res);
     }
 
     return sendJson(res, 404, { error: 'Not found' });
