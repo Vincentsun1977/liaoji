@@ -21,6 +21,10 @@
       const plan = data?.plan || 'free';
       const expiresAt = data?.membership_expires_at || data?.membershipExpiresAt || '';
       const pro = plan === 'pro' && (!expiresAt || new Date(expiresAt).getTime() > Date.now());
+      if (!pro) {
+        const supabaseMembership = await getSupabaseMembership(token);
+        if (supabaseMembership?.pro) return supabaseMembership;
+      }
       const authenticated = Boolean(data?.id || data?.email || data?.status !== 'anonymous');
       await chrome.storage.local.set({
         membershipPlan: pro ? 'pro' : plan,

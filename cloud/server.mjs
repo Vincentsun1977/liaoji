@@ -83,7 +83,7 @@ async function handleMe(req, res) {
   const user = await getSupabaseUser(token);
   if (!user) return sendJson(res, 401, { error: 'Invalid session token' });
 
-  const membership = await getMembershipByUserId(user.id);
+  const membership = await getMembershipByUserId(user.id, token);
   return sendJson(res, 200, {
     id: user.id,
     email: user.email || '',
@@ -223,7 +223,7 @@ async function resolveMembership(token) {
   const user = await getSupabaseUser(token);
   if (!user) return { pro: false, plan: 'free' };
 
-  const membership = await getMembershipByUserId(user.id);
+  const membership = await getMembershipByUserId(user.id, token);
   const expiresAt = membership?.current_period_end || '';
   const pro = membership?.plan === 'pro'
     && ['active', 'trialing'].includes(membership?.status || '')
@@ -252,9 +252,16 @@ async function getSupabaseUser(token) {
   return response.json();
 }
 
-async function getMembershipByUserId(userId) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !userId) return null;
-  const rows = await supabaseRest(`/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=*&limit=1`);
+async function getMembershipByUserId(userId, userToken = '') {
+  if (!SUPABASE_URL || !userId) return null;
+  const accessKey = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+  const bearerToken = SUPABASE_SERVICE_ROLE_KEY || userToken;
+  if (!accessKey || !bearerToken) return null;
+
+  const rows = await supabaseRest(`/rest/v1/memberships?user_id=eq.${encodeURIComponent(userId)}&select=*&limit=1`, {
+    accessKey,
+    bearerToken,
+  });
   return Array.isArray(rows) ? rows[0] || null : null;
 }
 
@@ -282,8 +289,8 @@ async function supabaseRest(path, options = {}) {
   const response = await fetch(`${SUPABASE_URL}${path}`, {
     method: options.method || 'GET',
     headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      apikey: options.accessKey || SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${options.bearerToken || SUPABASE_SERVICE_ROLE_KEY}`,
       'Content-Type': 'application/json',
       ...(options.headers || {}),
     },
