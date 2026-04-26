@@ -468,21 +468,7 @@
   }
 
   async function showMembershipModal(title, message) {
-    const membership = await window.ChatRestoreCloud.getMembership();
-    if (membership.authenticated && !membership.pro) {
-      membershipTitle.textContent = '已登录，尚未开通 Pro';
-      membershipMessage.textContent = '当前页单次导出仍可免费使用。升级 Pro 后可解锁批量导出和 AI 智能总结。';
-      membershipLoginButton.textContent = '重新登录';
-      membershipUpgradeButton.textContent = '立即升级 Pro';
-    } else {
-      membershipTitle.textContent = title || '选择适合您的计划';
-      membershipMessage.textContent = message || '无论您是偶尔收集灵感，还是构建长期个人知识库，我们都有适合您的方案。';
-      membershipLoginButton.textContent = '登录 / 注册';
-      membershipUpgradeButton.textContent = '立即升级 Pro';
-    }
-    resetMembershipActionButtons();
-    document.body.classList.add('has-membership-modal');
-    membershipModal.hidden = false;
+    openMembershipPage(title, message);
   }
 
   function hideMembershipModal() {
@@ -507,6 +493,15 @@
     } finally {
       setMembershipActionBusy(button, false);
     }
+  }
+
+  function openMembershipPage(title, message) {
+    const params = new URLSearchParams();
+    if (title) params.set('title', title);
+    if (message) params.set('message', message);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    chrome.tabs.create({ url: chrome.runtime.getURL(`membership.html${suffix}`) });
+    setStatus('已打开会员页面');
   }
 
   function setMembershipActionBusy(activeButton, isBusy, busyLabel = '') {

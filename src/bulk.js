@@ -456,7 +456,10 @@
 
   async function enforceMembershipGate() {
     if (await hasProAccess()) return;
-    await showMembershipOverlay();
+    openMembershipPage(
+      '批量导出需要 Pro',
+      '当前页单次导出可以免费使用；批量扫描和批量导出历史对话会在 Pro 会员里开放。'
+    );
   }
 
   async function hasProAccess() {
@@ -487,6 +490,13 @@
     membershipOverlay.hidden = false;
     setControlsDisabled(true);
     setStatus('需要会员');
+  }
+
+  function openMembershipPage(title, message) {
+    const params = new URLSearchParams();
+    if (title) params.set('title', title);
+    if (message) params.set('message', message);
+    location.replace(chrome.runtime.getURL(`membership.html?${params.toString()}`));
   }
 
   async function handleMembershipAction(event) {
