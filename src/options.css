@@ -186,7 +186,7 @@ h2 {
 
 .group-heading p,
 .setting-row p,
-.account-card span:not(.plan-badge) {
+.account-card p {
   color: var(--muted);
 }
 
@@ -206,9 +206,10 @@ h2 {
   padding: 26px 34px;
 }
 
-.account-card > div:first-child {
+.account-state {
   display: grid;
-  gap: 5px;
+  gap: 8px;
+  justify-items: start;
 }
 
 .account-card strong,
@@ -240,6 +241,34 @@ h2 {
 }
 
 .plan-badge.is-free {
+  color: #2f333a;
+}
+
+.account-status-badge {
+  min-width: 62px;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: var(--soft);
+  color: #2f333a;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
+.account-status-badge.is-pro {
+  background: linear-gradient(135deg, rgba(244, 63, 134, 0.12), rgba(124, 58, 237, 0.12));
+  color: transparent;
+}
+
+.account-status-badge.is-pro::before {
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  background-clip: text;
+  color: transparent;
+  content: "Pro";
+}
+
+.account-status-badge.is-free {
   color: #2f333a;
 }
 

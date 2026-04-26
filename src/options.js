@@ -12,7 +12,7 @@
   const targetPreview = document.getElementById('target-preview');
   const statusText = document.getElementById('status-text');
   const accountStatus = document.getElementById('account-status');
-  const planBadge = document.getElementById('plan-badge');
+  const accountStatusNote = document.getElementById('account-status-note');
   const aiStatusBadge = document.getElementById('ai-status-badge');
   const refreshMembershipButton = document.getElementById('refresh-membership-button');
   const loginButton = document.getElementById('login-button');
@@ -127,11 +127,11 @@
     const isPro = Boolean(membership.pro);
     const isLoggedIn = Boolean(membership.authenticated || membership.status !== 'anonymous');
 
-    planBadge.textContent = isPro ? '' : 'Free';
-    planBadge.className = `plan-badge ${isPro ? 'is-pro' : 'is-free'}`;
-    planBadge.title = isPro ? 'Pro 会员' : 'Free 账号';
-
-    accountStatus.textContent = `账号状态：${isPro ? 'Pro' : 'Free'}`;
+    accountStatus.textContent = isPro ? 'Pro' : 'Free';
+    accountStatus.className = `account-status-badge ${isPro ? 'is-pro' : 'is-free'}`;
+    accountStatusNote.textContent = isLoggedIn
+      ? (isPro ? '已激活会员能力' : '当前为免费账号')
+      : '未登录，仅可使用免费功能';
     aiStatusBadge.textContent = isPro ? '已激活' : '未激活';
     aiStatusBadge.className = `status-badge ${isPro ? 'is-active' : 'is-inactive'}`;
 

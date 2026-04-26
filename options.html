@@ -39,12 +39,11 @@
             </div>
 
             <div class="account-card">
-              <div>
-                <strong>账号状态</strong>
-                <span id="account-status">正在读取账号状态</span>
+              <div class="account-state">
+                <span id="account-status" class="account-status-badge">Free</span>
+                <p id="account-status-note">当前为免费账号</p>
               </div>
               <div class="account-actions">
-                <span id="plan-badge" class="plan-badge is-free">Free</span>
                 <button id="refresh-membership-button" class="link-button" type="button">刷新状态</button>
                 <button id="login-button" class="link-button" type="button">重新登录</button>
                 <button id="logout-button" class="link-button muted" type="button" hidden>退出</button>
