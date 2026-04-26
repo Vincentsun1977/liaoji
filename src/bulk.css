@@ -706,13 +706,16 @@ input[type="search"]:focus {
 }
 
 .plan-card li {
-  display: grid;
-  grid-template-columns: 18px 1fr;
+  display: flex;
+  align-items: flex-start;
   gap: 10px;
+  min-width: 0;
 }
 
 .plan-card li::before {
+  flex: 0 0 18px;
   color: #111113;
+  line-height: 1.45;
   content: "✓";
 }
 

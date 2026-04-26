@@ -207,14 +207,17 @@ button:not(:disabled):active {
 }
 
 .plan-card li {
-  display: grid;
-  grid-template-columns: 18px 1fr;
+  display: flex;
+  align-items: flex-start;
   gap: 10px;
+  min-width: 0;
 }
 
 .plan-card li::before {
+  flex: 0 0 18px;
   color: #111113;
   font-weight: 900;
+  line-height: 1.45;
   content: "✓";
 }
 
@@ -225,6 +228,12 @@ button:not(:disabled):active {
 .plan-card li strong,
 .plan-card li span {
   display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  writing-mode: horizontal-tb;
 }
 
 .plan-card li strong {
