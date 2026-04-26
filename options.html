@@ -12,7 +12,6 @@
         <div class="brand">
           <span class="brand-mark" aria-hidden="true"><img src="icons/icon32.png" alt=""></span>
           <strong>聊记设置</strong>
-          <span class="mode-pill">本地模式</span>
         </div>
         <div class="topbar-status">
           <span id="status-text">已就绪</span>
@@ -41,7 +40,7 @@
 
             <div class="account-card">
               <div>
-                <strong>账号会员</strong>
+                <strong>账号状态</strong>
                 <span id="account-status">正在读取账号状态</span>
               </div>
               <div class="account-actions">
@@ -121,37 +120,16 @@
           <section class="settings-group" id="ai">
             <div class="group-heading">
               <h2>AI总结</h2>
-              <p>主弹窗里的 AI 总结开关默认关闭；模型端点和密钥由云端统一维护。</p>
+              <p>AI 总结能力由云端统一维护，激活 Pro 后即可使用。</p>
             </div>
 
             <div class="settings-card">
-              <div class="setting-row">
+              <div class="setting-row ai-status-row">
                 <div>
-                  <label for="ai-provider-input">AI 产品</label>
-                  <p>用户只选择使用哪个 AI 产品，实际调用配置会在服务器端管理。</p>
+                  <label>AI总结状态</label>
+                  <p>激活后可在主弹窗打开 AI 总结开关。</p>
                 </div>
-                <select id="ai-provider-input" class="control">
-                  <option value="minimax">MiniMax</option>
-                  <option value="openai">OpenAI</option>
-                  <option value="claude">Claude</option>
-                  <option value="gemini">Gemini</option>
-                  <option value="deepseek">DeepSeek</option>
-                  <option value="qwen">通义千问</option>
-                  <option value="kimi">Kimi</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <label for="ai-summary-style-input">总结风格</label>
-                  <p>决定 AI 把对话整理成什么类型的笔记结构。</p>
-                </div>
-                <select id="ai-summary-style-input" class="control">
-                  <option value="knowledge">知识库笔记</option>
-                  <option value="meeting">会议纪要</option>
-                  <option value="tutorial">教程步骤</option>
-                  <option value="research">研究摘要</option>
-                </select>
+                <span id="ai-status-badge" class="status-badge is-inactive">未激活</span>
               </div>
             </div>
           </section>

@@ -10,11 +10,10 @@
   const folderDirectoryInput = document.getElementById('folder-directory-input');
   const overwriteInput = document.getElementById('overwrite-input');
   const targetPreview = document.getElementById('target-preview');
-  const aiProviderInput = document.getElementById('ai-provider-input');
-  const aiSummaryStyleInput = document.getElementById('ai-summary-style-input');
   const statusText = document.getElementById('status-text');
   const accountStatus = document.getElementById('account-status');
   const planBadge = document.getElementById('plan-badge');
+  const aiStatusBadge = document.getElementById('ai-status-badge');
   const refreshMembershipButton = document.getElementById('refresh-membership-button');
   const loginButton = document.getElementById('login-button');
   const logoutButton = document.getElementById('logout-button');
@@ -34,8 +33,6 @@
     vaultInput,
     folderInput,
     overwriteInput,
-    aiProviderInput,
-    aiSummaryStyleInput,
   ].forEach((input) => {
     input.addEventListener('change', saveSettings);
     input.addEventListener('input', saveSettings);
@@ -52,8 +49,6 @@
     vaultInput.value = syncSaved.obsidianVault || '';
     folderInput.value = syncSaved.obsidianFolder || '';
     overwriteInput.checked = Boolean(syncSaved.obsidianOverwrite);
-    aiProviderInput.value = syncSaved.aiProvider || defaults.DEFAULT_SYNC.aiProvider;
-    aiSummaryStyleInput.value = syncSaved.aiSummaryStyle || defaults.DEFAULT_SYNC.aiSummaryStyle;
     updateTargetPreview();
     await updateAccountStatus();
   }
@@ -115,8 +110,6 @@
       obsidianVault: settings.vault,
       obsidianFolder: settings.folder,
       obsidianOverwrite: settings.overwrite,
-      aiProvider: settings.aiProvider,
-      aiSummaryStyle: settings.aiSummaryStyle,
     });
     setStatus('已保存');
   }
@@ -126,8 +119,6 @@
       vault: normalizeVault(vaultInput.value),
       folder: normalizeFolder(folderInput.value),
       overwrite: overwriteInput.checked,
-      aiProvider: aiProviderInput.value || defaults.DEFAULT_SYNC.aiProvider,
-      aiSummaryStyle: aiSummaryStyleInput.value || defaults.DEFAULT_SYNC.aiSummaryStyle,
     };
   }
 
@@ -140,9 +131,9 @@
     planBadge.className = `plan-badge ${isPro ? 'is-pro' : 'is-free'}`;
     planBadge.title = isPro ? 'Pro 会员' : 'Free 账号';
 
-    accountStatus.textContent = isLoggedIn
-      ? `已登录 · ${isPro ? 'Pro 会员' : 'Free 账号'}`
-      : '未登录 · 当前只能使用免费功能';
+    accountStatus.textContent = `账号状态：${isPro ? 'Pro' : 'Free'}`;
+    aiStatusBadge.textContent = isPro ? '已激活' : '未激活';
+    aiStatusBadge.className = `status-badge ${isPro ? 'is-active' : 'is-inactive'}`;
 
     loginButton.textContent = isLoggedIn ? '重新登录' : '登录';
     logoutButton.hidden = !isLoggedIn;

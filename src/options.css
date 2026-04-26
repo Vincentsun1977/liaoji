@@ -88,7 +88,6 @@ select {
   height: 22px;
 }
 
-.mode-pill,
 .plan-badge {
   min-height: 26px;
   border-radius: 999px;
@@ -244,6 +243,27 @@ h2 {
   color: #2f333a;
 }
 
+.status-badge {
+  justify-self: end;
+  min-width: 78px;
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1;
+  text-align: center;
+}
+
+.status-badge.is-active {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.status-badge.is-inactive {
+  background: var(--soft);
+  color: #475569;
+}
+
 .link-button {
   min-height: auto;
   border: 0;
@@ -320,6 +340,10 @@ h2 {
 
 .license-row {
   min-height: 104px;
+}
+
+.ai-status-row {
+  min-height: 96px;
 }
 
 .license-control {
