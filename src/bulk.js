@@ -457,8 +457,8 @@
   async function enforceMembershipGate() {
     if (await hasProAccess()) return;
     openMembershipPage(
-      '批量导出需要 Pro',
-      '当前页单次导出可以免费使用；批量扫描和批量导出历史对话会在 Pro 会员里开放。'
+      '开通会员订阅',
+      '一杯奶茶的价格，让灵感有处安放，让知识持续生长'
     );
   }
 

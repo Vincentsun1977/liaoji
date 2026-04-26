@@ -264,11 +264,13 @@ button:not(:disabled):active {
 }
 
 .current-plan-button {
-  min-height: 48px;
+  justify-self: stretch;
+  min-height: 38px;
   border: 1px solid var(--line);
-  border-radius: 13px;
+  border-radius: 11px;
+  padding: 0 14px;
   color: #8b92a0;
-  background: #fff;
+  background: #fafbfc;
   font-weight: 850;
   opacity: 1;
 }
@@ -310,7 +312,18 @@ button:not(:disabled):active {
 
 .secondary-button:not(:disabled):hover,
 .primary-button:not(:disabled):hover {
-  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.11);
+  transform: translateY(-2px);
+}
+
+.secondary-button:not(:disabled):hover {
+  border-color: #c6cbd4;
+  background: #f9fafb;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, 0.1);
+}
+
+.primary-button:not(:disabled):hover {
+  background: #171719;
+  box-shadow: 0 16px 30px rgba(5, 5, 5, 0.24);
 }
 
 .secondary-button:disabled,
