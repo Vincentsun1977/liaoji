@@ -17,6 +17,7 @@
     "https://claude.ai/*",
     "https://gemini.google.com/*",
     "https://api.chatrestore-note.com/*",
+    "https://liaoji-cloud.onrender.com/*",
     "https://eadbqbxrdfnzqsggzmlh.supabase.co/*",
     "http://localhost:8787/*",
     "https://chat.deepseek.com/*",

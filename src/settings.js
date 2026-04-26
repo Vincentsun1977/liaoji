@@ -2,7 +2,7 @@
   'use strict';
 
   window.ChatRestoreSettings = {
-    DEFAULT_CLOUD_API_BASE_URL: 'https://api.chatrestore-note.com',
+    DEFAULT_CLOUD_API_BASE_URL: 'https://liaoji-cloud.onrender.com',
     DEFAULT_SUPABASE_URL: 'https://eadbqbxrdfnzqsggzmlh.supabase.co',
     DEFAULT_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhZGJxYnhyZGZuenFzZ2d6bWxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMDMwNTQsImV4cCI6MjA5MjY3OTA1NH0.yTM79mlvJVgIBw9K2JXA4bUkulUaEDXqG4FcavsFuO4',
     DEFAULT_AI_PROMPT: [
