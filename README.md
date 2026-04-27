@@ -1,84 +1,86 @@
-# chat_restore_note
+# 聊记隐私政策
 
-Chrome extension for saving important AI chat history into note-friendly Markdown.
+更新日期：2026-04-27
 
-## Supported Sites
+聊记是一款 AI 对话知识管理插件，用于帮助用户将 AI 聊天记录保存为 Markdown 笔记，并同步到 Obsidian 等笔记工具。我们重视用户隐私，并尽量减少数据收集和传输。
 
-- ChatGPT: `chatgpt.com`, `chat.openai.com`
-- Claude: `claude.ai`
-- Gemini: `gemini.google.com`
-- DeepSeek: `chat.deepseek.com`, `deepseek.com`
+## 我们处理哪些数据
 
-## First Version
+聊记可能处理以下数据：
 
-This version exports the current open conversation page:
+- AI 聊天页面内容：包括用户主动导出的对话标题、问题、回答、代码块、链接、图片附件链接或图片文件。
+- 页面来源信息：包括当前 AI 对话页面 URL、平台名称、导出时间等元数据。
+- 用户设置：包括 Obsidian Vault 名称、保存目录、是否覆盖同名笔记、AI 总结开关等。
+- 账号信息：用户使用 Google 或邮箱登录时，我们会处理邮箱地址和登录状态，用于识别会员状态。
+- 会员信息：包括会员码激活状态、会员类型、到期时间等。
 
-- Detects the AI chat platform.
-- Extracts visible conversation messages.
-- Builds Obsidian-friendly Markdown with YAML frontmatter.
-- Sends the note to Obsidian through the official `obsidian://new` URI.
-- Optionally runs AI Summary before export to turn the transcript into a cleaner knowledge-base note.
-- Copies Markdown to the clipboard.
-- Downloads a `.md` file.
-- Keeps Pro-only features behind a cloud membership boundary.
+## 我们如何使用数据
 
-Notion sync is not included yet. Notion requires an integration token and page/database configuration. That can be added after the extraction layer is stable.
+聊记只在用户主动操作时处理聊天内容，例如点击“保存到笔记”“批量导出”或开启“AI 智能总结”。
 
-## Install
+数据用途包括：
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked**.
-4. Select this folder: `chat_restore_note`.
+- 将当前 AI 对话整理为 Markdown 笔记。
+- 将笔记保存到用户指定的 Obsidian Vault 和目录。
+- 在用户主动选择时批量扫描和导出历史对话。
+- 在用户开启 AI 智能总结时，将对话内容发送到云端 AI 服务进行结构化整理。
+- 识别登录状态和 Pro 功能权限。
+- 保存用户的插件偏好设置。
 
-## Use
+## 数据是否会发送到云端
 
-1. Open a conversation in ChatGPT, Claude, Gemini, or DeepSeek.
-2. Click the `chat_restore_note` extension icon.
-3. Click **提取当前聊天**.
-4. Optional: enable **AI Summary**, enter your MiniMax API key, and edit the prompt if needed.
-5. For Obsidian, enter your Vault name and optional folder, then click **保存到 Obsidian**.
-6. You can also click **复制 Markdown** or **下载 .md**.
+默认导出 Markdown 笔记时，聊天内容主要在浏览器本地处理。
 
-## AI Summary
+当用户开启 AI 智能总结时，插件会将需要总结的对话内容发送到聊记云端服务，再由云端调用第三方 AI 模型服务生成总结结果。
 
-AI Summary is a Pro feature. The extension no longer stores model endpoints or API keys in the browser. It calls the product cloud API, and the server owns provider selection, API keys, rate limits, and billing checks.
+用户登录、会员码激活和会员状态查询会使用 Supabase 认证与数据库服务。
 
-The first cloud MVP lives in `cloud/server.mjs` and exposes:
+## 数据共享对象
 
-- `GET /v1/me` for membership state.
-- `GET /auth/login` and `GET /auth/checkout` for account and payment entry points.
-- `POST /v1/ai/summary` for server-side AI summary.
+为实现插件功能，我们可能与以下服务交互：
 
-## Bulk Export
+- Supabase：用于用户登录、邮箱认证、会员状态和会员码管理。
+- Render：用于部署聊记云端接口服务。
+- MiniMax 或其他已配置的 AI 模型服务：用于在用户开启 AI 智能总结时处理对话内容。
+- Obsidian：当用户选择保存到 Obsidian 时，插件会通过 Obsidian URI 将 Markdown 内容交给用户本地的 Obsidian 应用处理。
 
-Bulk Export is a Pro feature. Click **批量导出** in the popup to open the bulk workspace after membership verification. The workspace follows the platform of the current page. ChatGPT and Claude are supported first.
+我们不会出售用户数据，也不会将用户聊天内容用于广告投放。
 
-1. Keep a ChatGPT or Claude tab open.
-2. Click **扫描左侧历史**.
-3. Select the conversations to export.
-4. Click **选择导出目录** and choose the target local folder, such as your Obsidian `Raw/Chat_history` folder.
-5. Click **导出选中**.
+## 本地存储
 
-The first bulk version scans the conversations already loaded in the left sidebar. If you need older conversations, scroll the sidebar first so the site loads them, then scan again.
+聊记会使用 Chrome Storage 保存必要设置和状态，例如：
 
-The folder picker can open the system directory chooser, but Chrome extensions do not expose the full local path to web pages. The picker fills the selected folder name; nested vault-relative paths can still be edited manually, such as `Knowledge/AI Chats`.
+- Obsidian 保存目录配置
+- AI 总结开关
+- 登录 token 和会员状态缓存
+- 导出记录和每日免费导出次数
 
-For Obsidian URI, **Vault 名称 is the Obsidian vault name, not a Finder path**. If your vault folder is `Raw` and you want notes inside `Raw/Chat_history`, use:
+这些数据用于提供插件功能和改善使用体验。
 
-- Vault 名称: `Raw`
-- 文件夹: `Chat_history`
+## 图片附件
 
-## Obsidian Save
+当用户保存包含图片的对话时，聊记可能尝试将图片附件保存到用户指定的本地 Obsidian 目录。部分受保护图片可能无法读取，插件会保留说明或回到原对话查看的提示。
 
-The Obsidian button uses the official Obsidian URI flow:
+## 用户控制权
 
-- Action: `obsidian://new`
-- Target: your configured vault and folder.
-- Content: copied to clipboard first, then passed with `clipboard=true`.
+用户可以：
 
-Using the clipboard avoids oversized URLs for long conversations.
+- 在设置页修改或清除保存目录配置。
+- 退出登录。
+- 关闭 AI 智能总结。
+- 不使用批量导出或 AI 总结功能。
+- 在 Chrome 扩展管理页卸载插件并清除本地数据。
 
-## Notes
+## 数据安全
 
-AI chat UIs change often. The extractor uses platform-specific selectors first, then falls back to visible conversation blocks. If a platform changes its DOM, the Markdown preview helps verify before saving.
+聊记通过 HTTPS 与云端服务通信。AI 服务密钥等敏感配置保存在云端，不会暴露给插件前端。
+
+## 儿童隐私
+
+聊记不是面向儿童的产品。我们不会有意收集儿童个人信息。
+
+## 联系方式
+
+如有隐私相关问题，请联系：
+
+Vincentsun1977@gmail.com
