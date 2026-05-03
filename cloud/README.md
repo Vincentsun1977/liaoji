@@ -21,9 +21,9 @@ PUBLIC_BASE_URL=https://api.your-domain.com
 SUPABASE_URL=https://eadbqbxrdfnzqsggzmlh.supabase.co
 SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-MINIMAX_BASE_URL=https://api.minimaxi.com/v1
-MINIMAX_MODEL=MiniMax-M2.7
-MINIMAX_API_KEY=your_server_side_key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_API_KEY=your_deepseek_api_key
 STRIPE_SECRET_KEY=sk_live_or_test_xxx
 STRIPE_PRICE_ID=price_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
@@ -39,7 +39,7 @@ For the current test account, `setup_trial.sql` creates the membership table and
 ```bash
 cd chat_restore_note/cloud
 npm install
-MINIMAX_API_KEY=your_server_side_key npm start
+DEEPSEEK_API_KEY=your_deepseek_api_key npm start
 ```
 
 For local extension testing, set Chrome storage manually:
@@ -127,7 +127,7 @@ After that, Pro users can call `POST /v1/ai/summary`.
 
 ## Verify AI Summary
 
-With `MINIMAX_API_KEY` configured and a Pro token:
+With `DEEPSEEK_API_KEY` configured and a Pro token:
 
 ```bash
 curl -sS -X POST https://your-cloud-api.example.com/v1/ai/summary \

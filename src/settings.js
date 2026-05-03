@@ -21,7 +21,7 @@
       obsidianFolder: 'AI Chats',
       obsidianOverwrite: true,
       aiSummaryEnabled: false,
-      aiProvider: 'minimax',
+      aiProvider: 'deepseek',
       aiSummaryStyle: 'knowledge',
     },
     DEFAULT_LOCAL: {},

@@ -9,9 +9,9 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
-const MINIMAX_BASE_URL = (process.env.MINIMAX_BASE_URL || 'https://api.minimaxi.com/v1').replace(/\/+$/g, '');
-const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.7';
-const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || '';
+const DEEPSEEK_BASE_URL = (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com').replace(/\/+$/g, '');
+const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const DEV_PRO_TOKEN = process.env.DEV_PRO_TOKEN || 'dev-pro-token';
 const LICENSE_CODE_SALT = process.env.LICENSE_CODE_SALT || 'liaoji-local-license-salt';
 const DEFAULT_APP_CONFIG = {
@@ -123,9 +123,9 @@ async function handleSummary(req, res) {
   const token = getBearerToken(req);
   const membership = await resolveMembership(token);
   if (!membership.pro) return sendJson(res, 403, { error: 'Pro membership required' });
-  if (!MINIMAX_API_KEY) {
+  if (!DEEPSEEK_API_KEY) {
     return sendJson(res, 501, {
-      error: 'AI 总结服务尚未配置：请在云端环境变量中设置 MINIMAX_API_KEY',
+      error: 'AI 总结服务尚未配置：请在云端环境变量中设置 DEEPSEEK_API_KEY',
     });
   }
 
@@ -133,7 +133,7 @@ async function handleSummary(req, res) {
   const markdown = String(body.markdown || '').trim();
   if (!markdown) return sendJson(res, 400, { error: 'markdown is required' });
 
-  const aiMarkdown = await summarizeWithMinimax(body, markdown);
+  const aiMarkdown = await summarizeWithDeepseek(body, markdown);
   return sendJson(res, 200, { markdown: aiMarkdown });
 }
 
@@ -254,17 +254,17 @@ async function handleStripeWebhook(req, res) {
   return sendJson(res, 200, { received: true });
 }
 
-async function summarizeWithMinimax(body, markdown) {
-  const response = await fetch(`${MINIMAX_BASE_URL}/chat/completions`, {
+async function summarizeWithDeepseek(body, markdown) {
+  const response = await fetch(`${DEEPSEEK_BASE_URL}/v1/chat/completions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${MINIMAX_API_KEY}`,
+      Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MINIMAX_MODEL,
+      model: DEEPSEEK_MODEL,
       temperature: 0.2,
-      max_completion_tokens: 4096,
+      max_tokens: 4096,
       messages: [
         {
           role: 'system',
@@ -286,7 +286,10 @@ async function summarizeWithMinimax(body, markdown) {
   });
 
   const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(data?.error?.message || data?.message || `AI request failed (${response.status})`);
+  if (!response.ok) {
+    const msg = data?.error?.message || data?.message || JSON.stringify(data) || `AI request failed (${response.status})`;
+    throw new Error(msg);
+  }
   const content = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text || '';
   return cleanAiMarkdown(Array.isArray(content) ? content.map((part) => part?.text || part).join('') : content);
 }

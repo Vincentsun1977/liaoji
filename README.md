@@ -41,7 +41,7 @@
 
 - Supabase：用于用户登录、邮箱认证、会员状态和会员码管理。
 - Render：用于部署聊记云端接口服务。
-- MiniMax 或其他已配置的 AI 模型服务：用于在用户开启 AI 智能总结时处理对话内容。
+- DeepSeek 或其他已配置的 AI 模型服务：用于在用户开启 AI 智能总结时处理对话内容。
 - Obsidian：当用户选择保存到 Obsidian 时，插件会通过 Obsidian URI 将 Markdown 内容交给用户本地的 Obsidian 应用处理。
 
 我们不会出售用户数据，也不会将用户聊天内容用于广告投放。
